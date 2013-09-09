@@ -18,7 +18,6 @@ class HttpClient
     @statClient = @options.statClient || new BlackholeStatsClient()
     @n = 0
     @hostsLength = @hosts.length
-    @http
 
   request: (method, path) ->
     host = @hosts[@nextIndex()]
