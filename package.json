@@ -1,0 +1,19 @@
+{
+  "name": "httpclient",
+  "version": "0.0.0",
+  "description": "A more robust http client",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/imownbey/httpclient.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "q-io": "~1.9.4",
+    "q": "~0.9.7"
+  }
+}
