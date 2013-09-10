@@ -14,6 +14,7 @@
   "license": "BSD",
   "dependencies": {
     "q-io": "~1.9.4",
-    "q": "~0.9.7"
+    "q": "~0.9.7",
+    "coffee": "0.0.1"
   }
 }
