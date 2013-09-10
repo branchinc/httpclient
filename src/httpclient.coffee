@@ -42,7 +42,4 @@ class HttpClient
     @n = (@n + 1) % @hostsLength
     @n
 
-client = new HttpClient
-  hosts: ["https://api.potluck.it"]
-
 module.exports = HttpClient
