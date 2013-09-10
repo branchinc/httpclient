@@ -19,11 +19,11 @@ class HttpClient
     @n = 0
     @hostsLength = @hosts.length
 
-  request: (method, path) ->
+  request: (method, path, body) ->
     host = @hosts[@nextIndex()]
     @statClient.incr("httpClient.requests~total,#{host},#{path}")
 
-    requestParams = { url: host + path, method: method }
+    requestParams = { url: host + path, method: method, body: body }
     @statClient.time "httpClient.requestTime~total,#{host}", () =>
       HTTP.request(requestParams).then (response) =>
         if response.status == 200
@@ -37,6 +37,9 @@ class HttpClient
 
   get: (path) ->
     @request("GET", path)
+
+  post: (path, body) ->
+    @request("POST", path, body)
 
   nextIndex: () ->
     @n = (@n + 1) % @hostsLength

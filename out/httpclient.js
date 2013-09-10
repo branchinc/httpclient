@@ -42,14 +42,15 @@
       this.hostsLength = this.hosts.length;
     }
 
-    HttpClient.prototype.request = function(method, path) {
+    HttpClient.prototype.request = function(method, path, body) {
       var host, requestParams,
         _this = this;
       host = this.hosts[this.nextIndex()];
       this.statClient.incr("httpClient.requests~total," + host + "," + path);
       requestParams = {
         url: host + path,
-        method: method
+        method: method,
+        body: body
       };
       return this.statClient.time("httpClient.requestTime~total," + host, function() {
         return HTTP.request(requestParams).then(function(response) {
@@ -70,6 +71,10 @@
 
     HttpClient.prototype.get = function(path) {
       return this.request("GET", path);
+    };
+
+    HttpClient.prototype.post = function(path, body) {
+      return this.request("POST", path, body);
     };
 
     HttpClient.prototype.nextIndex = function() {
