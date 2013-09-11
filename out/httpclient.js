@@ -60,6 +60,9 @@
           return deferred.reject(new BadResponse(host, path, response.statusCode));
         } else {
           _this.statClient.incr("httpClient.success~total," + host + "," + host + path);
+          try {
+            body = JSON.parse(body);
+          } catch (_error) {}
           return deferred.resolve(body);
         }
       });

@@ -33,6 +33,8 @@ class HttpClient
         deferred.reject(new BadResponse(host, path, response.statusCode))
       else
         @statClient.incr("httpClient.success~total,#{host},#{host}#{path}")
+        try
+          body = JSON.parse(body)
         deferred.resolve(body)
 
     @statClient.time("httpClient.requestTime~total,#{host}", deferred.promise)
