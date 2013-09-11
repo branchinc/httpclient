@@ -43,7 +43,8 @@
     }
 
     HttpClient.prototype.request = function(method, path, query, body) {
-      var deferred, host, requestParams;
+      var deferred, host, requestParams,
+        _this = this;
       host = this.hosts[this.nextIndex()];
       this.statClient.incr("httpClient.requests~total," + host + "," + path);
       requestParams = {
@@ -55,10 +56,10 @@
       deferred = Q.defer();
       request(requestParams, function(error, response, body) {
         if (error) {
-          this.statClient.incr("httpClient.error~total," + host + "," + host + path);
+          _this.statClient.incr("httpClient.error~total," + host + "," + host + path);
           return deferred.reject(new BadResponse(host, path, response.statusCode));
         } else {
-          this.statClient.incr("httpClient.success~total," + host + "," + host + path);
+          _this.statClient.incr("httpClient.success~total," + host + "," + host + path);
           return deferred.resolve({
             response: response,
             body: JSON.parse(body)

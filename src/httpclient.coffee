@@ -27,7 +27,7 @@ class HttpClient
 
     deferred = Q.defer()
 
-    request requestParams, (error, response, body) ->
+    request requestParams, (error, response, body) =>
       if error
         @statClient.incr("httpClient.error~total,#{host},#{host}#{path}")
         deferred.reject(new BadResponse(host, path, response.statusCode))
