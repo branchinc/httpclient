@@ -13,8 +13,8 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
-    "q-io": "~1.9.4",
     "q": "~0.9.7",
-    "coffee-script": "~1.6.3"
+    "coffee-script": "~1.6.3",
+    "request": "~2.27.0"
   }
 }

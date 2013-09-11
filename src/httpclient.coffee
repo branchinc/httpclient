@@ -1,6 +1,6 @@
 Q = require "q"
 Q.longStackSupport = true
-HTTP = require "q-io/http"
+request = require 'request'
 
 class BlackholeStatsClient
   incr: () ->
@@ -11,7 +11,7 @@ class HttpClient
   class BadResponse
     constructor: (host, path, statusCode) ->
       @message = "Bad response from #{host}#{path} (#{statusCode})"
-      @name = "HttpBadResponse"
+      @name = "HTTPBadResponse"
 
   constructor: (@options) ->
     @hosts = @options.hosts
@@ -19,27 +19,31 @@ class HttpClient
     @n = 0
     @hostsLength = @hosts.length
 
-  request: (method, path, body) ->
+  request: (method, path, query, body) ->
     host = @hosts[@nextIndex()]
     @statClient.incr("httpClient.requests~total,#{host},#{path}")
 
-    requestParams = { url: host + path, method: method, body: body }
-    @statClient.time "httpClient.requestTime~total,#{host}", () =>
-      HTTP.request(requestParams).then (response) =>
-        if response.status == 200
-          @statClient.incr("httpClient.success~total,#{host},#{host}#{path}")
-          response.body.read().then (body) =>
-            strResponse = body.toString("utf-8")
-            JSON.parse(strResponse)
-        else
-          @statClient.incr("httpClient.error~total,#{host},#{host}#{path}")
-          throw new BadResponse(host, path, response.status)
+    requestParams = { url: host + path, method: method, json: body, qs: query }
 
-  get: (path) ->
-    @request("GET", path)
+    deferred = Q.defer()
+
+    request requestParams, (error, response, body) ->
+      if error
+        @statClient.incr("httpClient.error~total,#{host},#{host}#{path}")
+        deferred.reject(new BadResponse(host, path, response.statusCode))
+      else
+        @statClient.incr("httpClient.success~total,#{host},#{host}#{path}")
+        deferred.resolve
+          response: response
+          body: JSON.parse(body)
+
+    @statClient.time("httpClient.requestTime~total,#{host}", deferred.promise)
+
+  get: (path, query) ->
+    @request("GET", path, query)
 
   post: (path, body) ->
-    @request("POST", path, body)
+    @request("POST", path, null, body)
 
   nextIndex: () ->
     @n = (@n + 1) % @hostsLength
