@@ -28,14 +28,12 @@ class HttpClient
     deferred = Q.defer()
 
     request requestParams, (error, response, body) =>
-      if error
+      if error || response.statusCode != 200
         @statClient.incr("httpClient.error~total,#{host},#{host}#{path}")
         deferred.reject(new BadResponse(host, path, response.statusCode))
       else
         @statClient.incr("httpClient.success~total,#{host},#{host}#{path}")
-        deferred.resolve
-          response: response
-          body: JSON.parse(body)
+        deferred.resolve(body)
 
     @statClient.time("httpClient.requestTime~total,#{host}", deferred.promise)
 

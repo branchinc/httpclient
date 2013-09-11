@@ -55,15 +55,12 @@
       };
       deferred = Q.defer();
       request(requestParams, function(error, response, body) {
-        if (error) {
+        if (error || response.statusCode !== 200) {
           _this.statClient.incr("httpClient.error~total," + host + "," + host + path);
           return deferred.reject(new BadResponse(host, path, response.statusCode));
         } else {
           _this.statClient.incr("httpClient.success~total," + host + "," + host + path);
-          return deferred.resolve({
-            response: response,
-            body: JSON.parse(body)
-          });
+          return deferred.resolve(body);
         }
       });
       return this.statClient.time("httpClient.requestTime~total," + host, deferred.promise);
